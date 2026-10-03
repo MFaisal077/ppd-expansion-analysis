@@ -7,10 +7,10 @@ are in place. Raw files are never modified. Standard library only.
 
 Run from anywhere:
 
-    python data/download_data.py                  # download 2015-2025, then report
-    python data/download_data.py --years 2020-2026
-    python data/download_data.py --report-only    # skip downloads, just profile + check
-    python data/download_data.py --manual         # print the manual download steps
+    python raw_data/collect_data.py                  # download 2015-2025, then report
+    python raw_data/collect_data.py --years 2020-2026
+    python raw_data/collect_data.py --report-only    # skip downloads, just profile + check
+    python raw_data/collect_data.py --manual         # print the manual download steps
 """
 import argparse
 import csv

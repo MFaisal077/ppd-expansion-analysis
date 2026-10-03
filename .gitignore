@@ -1,4 +1,11 @@
-data/raw/
+# Raw data stays local (about 6 GB). Keep only the small provenance files.
+data/raw/*
+!data/raw/MANIFEST.csv
+!data/raw/ppd_profile.csv
+
+# Virtual environments
+.venv/
 .env/
+
 __pycache__/
 *.pyc

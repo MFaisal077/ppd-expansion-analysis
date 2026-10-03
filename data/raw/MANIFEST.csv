@@ -1,0 +1,12 @@
+file,source_url,bytes,sha256,downloaded_at_utc
+data\raw\ppd\pp-2015.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2015.csv,175207909,b16108a0c074e863d80fd78331dbdb52d0f75079a2b38130692376e737e5078a,2026-10-03T11:15:08+00:00
+data\raw\ppd\pp-2016.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2016.csv,181646479,3ddb83af8195fc199ac3eba08b26140fe39646784325fa52b41b4a6cfdbea517,2026-10-03T11:15:09+00:00
+data\raw\ppd\pp-2017.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2017.csv,185355333,e5eacbcfca377e074be4f0ec83efc604b24502e89753650a356a7c89df0ee291,2026-10-03T11:15:09+00:00
+data\raw\ppd\pp-2018.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2018.csv,180182279,2e9fb3872f0800c86458ea62a2c999195a7b55b5da17b4a8a96705c122590b27,2026-10-03T11:15:10+00:00
+data\raw\ppd\pp-2019.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2019.csv,176115167,94764797c69f02556f904a8dffb3efb962df3048f6eadd64b28e7a18fa2c2d39,2026-10-03T11:15:10+00:00
+data\raw\ppd\pp-2020.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2020.csv,156338463,ca172e2eec82097d12b577026811922b0256ba4eae2c28624c2ead6aa9c4803c,2026-10-03T11:15:11+00:00
+data\raw\ppd\pp-2021.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2021.csv,223312496,04f6869b861bcebd0bee3eec00baccdbe19372b299190a161b33b476589a6bfc,2026-10-03T11:15:12+00:00
+data\raw\ppd\pp-2022.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2022.csv,187904681,e543dd53d6b2f8f47d95bed2956693c38c28ba2d0450c3df173ddce3eb80b84a,2026-10-03T11:15:12+00:00
+data\raw\ppd\pp-2023.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2023.csv,150366878,0d87c096be0c46d358d2d0a9e426e3e9aff16c0ca9d514162b5e56f000d97a1d,2026-10-03T11:15:13+00:00
+data\raw\ppd\pp-2024.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2024.csv,162424209,afec0cff353cc4570cc02795b78dbd270b4e678b5a0a50bc3e082c883abb7707,2026-10-03T11:15:13+00:00
+data\raw\ppd\pp-2025.csv,http://prod.publicdata.landregistry.gov.uk.s3-website-eu-west-1.amazonaws.com/pp-2025.csv,169648191,83540b18086e5748116c744d9e930ad210cafcbb01a5d7d41fcbd2464ba0b5fd,2026-10-03T11:15:14+00:00
