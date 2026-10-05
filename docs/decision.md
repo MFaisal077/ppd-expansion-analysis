@@ -18,7 +18,7 @@ Status: **Decided**, **Open** (still to settle) or **Superseded**.
 | D08 | [Raw layer stores every value as text, unchanged](#d08) | raw | Decided | 2026-10-03 |
 | D09 | [Earnings: ASHE Table 8.7, residence-based, full-time median](#d09) | stg | Decided | 2026-10-03 |
 | D10 | [Rent source: ONS ad hoc London private rents, Apr 2025 to Mar 2026](#d10) | stg | Decided | 2026-10-03 |
-| D11 | [Rent basis for gross rental yield](#d11) | mart | **Open** | |
+| D11 | [Rent basis for yield: 2-bed rent against flat price](#d11) | stg, mart | Decided | 2026-10-06 |
 | D12 | [Price upper cap](#d12) | stg | **Open** | |
 
 ---
@@ -207,22 +207,48 @@ the cross-check source.
 ---
 
 <a id="d11"></a>
-## D11. Rent basis for gross rental yield (Open)
+## D11. Rent basis for yield: 2-bed rent against flat price
 
-**Question.** The rent file gives medians by bedroom category only, and
-medians cannot be combined into one borough median. The brief's current choice
-("all dwellings for both rent and price") cannot be built from this file
-as-is.
+**Decision (option A).** Gross rental yield for each borough is:
 
-**Options.**
+```
+12 × median monthly rent for 2-bed homes ÷ median price of flats sold (category A)
+```
+
+Rent comes from worksheet 2 of the rents file (D10), `Two Bedrooms` rows only.
+The price is from the latest full year, 2025.
+
+**Why.**
+- The rent file gives medians by bedroom category only, and medians cannot be
+  combined into one borough median. The brief's original choice, all
+  dwellings for both rent and price, cannot be built from this file as-is.
+- A compares the most similar things, a 2-bed rent with a flat sale, and is
+  the easiest basis to explain: "a typical flat costs this and rents for this".
+- 2-bed samples are large in every ranked borough: 360 to 1,690 rents.
+
+**Options considered.**
 
 | Option | For | Against |
 |---|---|---|
-| A. 2-bed median rent against median flat price | Close to like-for-like; the brief lists separate flat yields as an alternative | Ignores houses |
+| **A. 2-bed median rent against median flat price (chosen)** | Close to like-for-like; the brief lists separate flat yields as an alternative | Ignores houses |
 | B. Count-weighted average of bedroom medians, against all-dwelling median price | Uses all property types | An approximation, not a true median |
 | C. PIPR all-dwellings average rent | A true all-properties figure | A mean, not a median; different method from the price data |
 
-**To decide before** building `stg.rents`.
+**Effect of the choice (2025 data).** The basis changes the level of yield a
+lot, though not its direction:
+
+| Borough | A: 2-bed rent ÷ flat price | B: weighted rent ÷ all-dwelling price |
+|---|---|---|
+| Barking and Dagenham | £1,700 ÷ £240,000 = 8.5% | £1,687 ÷ £385,000 = 5.3% |
+| Camden | £2,650 ÷ £690,000 = 4.6% | £2,342 ÷ £780,000 = 3.6% |
+
+**Known bias, to state in the memo.** The flat price includes studios and
+1-bed flats, which are compared with a 2-bed rent. A may therefore overstate
+yield in boroughs where most flats sold are small.
+
+**Planned check.** Rerun the ranking with option B as a sensitivity. If the
+two recommended boroughs stay in the top five under both, say so; if not, the
+memo says so.
 
 ---
 

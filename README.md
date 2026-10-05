@@ -183,7 +183,7 @@ Things already learned about the data:
 
 Every choice that changes a number is recorded in
 [docs/decision.md](docs/decision.md), with the reason and the alternative.
-Still open: the rent basis for yield (D11) and the price upper cap (D12).
+Still open: the price upper cap (D12).
 
 ## Data sources and licences
 
