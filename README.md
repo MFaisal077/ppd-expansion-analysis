@@ -1,7 +1,7 @@
 # London Borough Expansion Analysis
 
-> **Draft.** The raw data layer is built; staging, core, marts, scoring and the
-> dashboard are still to come. Expect this README to change as they land.
+> **Draft.** The raw layer is built and Price Paid staging is done; staging for
+> the other sources, core, marts, scoring and the dashboard are still to come. Expect this README to change as they land.
 
 Which two London boroughs should a lettings and sales agency open new branches
 in? This project ranks the 32 London boroughs on five metrics (price growth,
@@ -19,7 +19,7 @@ A layered warehouse in PostgreSQL, each layer built by numbered SQL files:
 | Layer | Schema | What it holds | Status |
 |---|---|---|---|
 | Raw | `raw` | Source files loaded as text, unchanged | Done |
-| Staging | `stg` | Typed columns, clean postcodes, deleted and duplicate rows removed, every drop counted | To do |
+| Staging | `stg` | Typed columns, clean postcodes, deleted and duplicate rows removed, every drop counted | Price Paid done |
 | Core | `core` | One row per sale, joined to its borough through the postcode directory | To do |
 | Marts | `mart` | Borough-by-year medians and the five metrics | To do |
 | Scoring | `mart` | Rescaled, weighted ranking and weight sensitivity | To do |
@@ -122,6 +122,22 @@ SELECT * FROM qa.check_log WHERE run_id = (SELECT max(run_id) FROM qa.check_log)
 SELECT * FROM raw.load_log  WHERE run_id = (SELECT max(run_id) FROM raw.load_log);
 ```
 
+## Build staging
+
+Run the staging SQL against the database, in pgAdmin's Query Tool or with psql:
+
+```bash
+psql -U postgres -h localhost -d ppd_expansion -f sql/02_stg_ppd.sql
+```
+
+This builds `stg.ppd` (10.6 million sales in scope, with real types) and
+`stg.ppd_dropped` (625,714 excluded sales, each with a reason). Every raw row
+lands in exactly one of the two:
+
+```sql
+SELECT reason, count(*) FROM stg.ppd_dropped GROUP BY reason;
+```
+
 ## Repository layout
 
 ```
@@ -129,6 +145,8 @@ raw_data/collect_data.py   download Price Paid Data, profile it, check manual do
 scripts/load_raw.py        load every source into the raw schema
 sql/00_create_schemas.sql  schemas, raw.load_log, qa.check_log
 sql/01_raw_tables.sql      raw table definitions
+sql/02_stg_ppd.sql         Price Paid staging: stg.ppd (kept) and stg.ppd_dropped (with reason)
+docs/decision.md           assumptions and decisions log
 data/raw/                  source files (git-ignored apart from the manifest and profile)
 ```
 
@@ -161,15 +179,11 @@ Things already learned about the data:
 - The rents file has no all-properties median per borough, only medians by
   bedroom category, and its notes warn against comparing areas.
 
-## Open decisions
+## Decisions
 
-To be settled and recorded in a decisions log:
-
-- **Rent basis for yield.** Options: 2-bed rent against flat prices; a
-  count-weighted average of bedroom medians; or a different source with an
-  all-dwellings figure (ONS Price Index of Private Rents).
-- **Price upper cap**, after inspecting the distribution in staging.
-- **Dedupe rule** for transaction IDs appearing in more than one yearly file.
+Every choice that changes a number is recorded in
+[docs/decision.md](docs/decision.md), with the reason and the alternative.
+Still open: the rent basis for yield (D11) and the price upper cap (D12).
 
 ## Data sources and licences
 
