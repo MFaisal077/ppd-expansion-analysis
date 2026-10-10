@@ -45,3 +45,18 @@ from raw.ppd
 where record_status = 'D'
    or property_type = 'O'
    or price::int < 10000;
+
+
+--staging checks
+insert into qa.check_log (run_id, layer, check_name, subject, status, expected, observed)
+select
+    'stg_' || to_char(now(), 'YYYYMMDD"T"HH24MISS'),
+    'stg',
+    'raw_rows_equal_kept_plus_dropped',
+    'stg.ppd',
+    case when r.n = k.n + d.n then 'pass' else 'fail' end,
+    r.n::text,
+    (k.n + d.n)::text
+from (select count(*) n from raw.ppd)         r,
+     (select count(*) n from stg.ppd)         k,
+     (select count(*) n from stg.ppd_dropped) d;

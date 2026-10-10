@@ -1,7 +1,7 @@
 # London Borough Expansion Analysis
 
-> **Draft.** The raw layer is built and Price Paid staging is done; staging for
-> the other sources, core, marts, scoring and the dashboard are still to come. Expect this README to change as they land.
+> **Draft.** The raw, staging and core layers are built. The marts, scoring and
+> dashboard are still to come. Expect this README to change as they land.
 
 Which two London boroughs should a lettings and sales agency open new branches
 in? This project ranks the 32 London boroughs on five metrics (price growth,
@@ -19,8 +19,8 @@ A layered warehouse in PostgreSQL, each layer built by numbered SQL files:
 | Layer | Schema | What it holds | Status |
 |---|---|---|---|
 | Raw | `raw` | Source files loaded as text, unchanged | Done |
-| Staging | `stg` | Typed columns, clean postcodes, deleted and duplicate rows removed, every drop counted | Price Paid done |
-| Core | `core` | One row per sale, joined to its borough through the postcode directory | To do |
+| Staging | `stg` | Typed columns, clean postcodes, deleted and duplicate rows removed, every drop counted | Done |
+| Core | `core` | One row per sale, joined to its borough through the postcode directory | Done |
 | Marts | `mart` | Borough-by-year medians and the five metrics | To do |
 | Scoring | `mart` | Rescaled, weighted ranking and weight sensitivity | To do |
 
@@ -138,6 +138,28 @@ lands in exactly one of the two:
 SELECT reason, count(*) FROM stg.ppd_dropped GROUP BY reason;
 ```
 
+Then the three smaller sources:
+
+```bash
+psql -U postgres -h localhost -d ppd_expansion -f sql/03_stg_inputs.sql
+```
+
+This builds `stg.borough` (the 33 London areas, 32 of them ranked),
+`stg.earnings` (median full-time pay with its quality band) and `stg.rents`
+(2-bed median monthly rent).
+
+## Build core
+
+```bash
+psql -U postgres -h localhost -d ppd_expansion -f sql/04_core_sales.sql
+```
+
+This builds `core.sales`: one row per London sale (1.19 million), with its
+borough from the ONS Postcode Directory. Sales that Price Paid Data places in
+London but that could not be given a borough go to `core.sales_unmatched` with
+a reason. The file logs its checks to `qa.check_log` and stops with an error
+if one fails. The postcode match rate is 99.92%.
+
 ## Repository layout
 
 ```
@@ -146,7 +168,10 @@ scripts/load_raw.py        load every source into the raw schema
 sql/00_create_schemas.sql  schemas, raw.load_log, qa.check_log
 sql/01_raw_tables.sql      raw table definitions
 sql/02_stg_ppd.sql         Price Paid staging: stg.ppd (kept) and stg.ppd_dropped (with reason)
+sql/03_stg_inputs.sql      staging for the borough list, earnings and 2-bed rents
+sql/04_core_sales.sql      core.sales (London sales with borough), unmatched list, checks
 docs/decision.md           assumptions and decisions log
+docs/figures/              charts made from the data
 data/raw/                  source files (git-ignored apart from the manifest and profile)
 ```
 

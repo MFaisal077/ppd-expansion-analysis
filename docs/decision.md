@@ -19,7 +19,9 @@ Status: **Decided**, **Open** (still to settle) or **Superseded**.
 | D09 | [Earnings: ASHE Table 8.7, residence-based, full-time median](#d09) | stg | Decided | 2026-10-03 |
 | D10 | [Rent source: ONS ad hoc London private rents, Apr 2025 to Mar 2026](#d10) | stg | Decided | 2026-10-03 |
 | D11 | [Rent basis for yield: 2-bed rent against flat price](#d11) | stg, mart | Decided | 2026-10-06 |
-| D12 | [Price upper cap](#d12) | stg | **Open** | |
+| D12 | [Price upper cap](#d12) | mart | **Open** | |
+| D13 | [Core holds London sales only, category A and B](#d13) | core | Decided | 2026-10-10 |
+| D14 | [How the postcode match rate is measured](#d14) | core | Decided | 2026-10-10 |
 
 ---
 
@@ -256,9 +258,82 @@ memo says so.
 ## D12. Price upper cap (Open)
 
 **Question.** The brief sets a £10,000 floor and an upper cap "after inspecting
-the distribution". The highest raw price is £900,000,000, almost certainly a
-portfolio or commercial transfer recorded as one sale.
+the distribution".
 
-**Plan.** Inspect the top of the London price distribution in core, choose a
-cap or percentile trim, and record it here. Medians are robust to a few
-extreme values, so the cap mainly matters for volatility and outlier logging.
+**Evidence (London sales in `core.sales`, 2015 to 2025).**
+
+| | Category A | Category B |
+|---|---|---|
+| Sales | 1,020,942 | 169,898 |
+| Median price | £485,000 | £400,000 |
+| 99th percentile | £3,300,000 | £4,038,500 |
+| 99.9th percentile | £10,000,000 | £17,070,000 |
+| Highest price | £90,000,000 | £160,000,000 |
+| Sales of £10 million or more | 1,036 (0.1%) | 425 (0.3%) |
+
+The most extreme raw prices (up to £900 million) were property type "other"
+and were already excluded in staging (D05).
+
+**Recommendation, not yet decided.** Exclude category A sales of £10 million
+or more from the metrics: about 1 sale in 1,000. Every metric is built on
+medians, which a few extreme values barely move, so the cap is a safeguard
+rather than a correction. Excluded sales would be counted and logged.
+
+**Alternative.** No cap, relying on medians; or a percentile trim per borough
+and year.
+
+**To decide before** building the marts.
+
+---
+
+<a id="d13"></a>
+## D13. Core holds London sales only, category A and B
+
+**Decision.** `core.sales` has one row per sale whose postcode is in one of the
+33 London areas (D01). It keeps both category A and B, with `ppd_category` as
+the flag. Uniqueness of `transaction_id` is enforced with a primary key.
+
+**Why.** Every metric reads from one table, so London and borough are defined
+once. Category B stays available for the sensitivity analysis (D03); headline
+metrics filter to category A in the marts.
+
+**Result.** 1,190,840 London sales, of which 1,020,942 are category A. Every
+borough has at least 136 category A sales in every year, so no borough-year
+falls below the brief's minimum of 30.
+
+---
+
+<a id="d14"></a>
+## D14. How the postcode match rate is measured
+
+**Decision.** The match rate is measured over the sales that Price Paid Data
+itself places in Greater London (its `county` field):
+
+```
+match rate = county-London sales that got a London borough
+             ÷ all county-London sales in staging
+```
+
+Sales that did not get a borough are listed in `core.sales_unmatched`, each
+with a reason.
+
+**Why.** A sale with no usable postcode has no borough, so the postcode cannot
+tell us whether it was a London sale. The `county` field is an independent
+answer to "is this sale in London?", which makes it a fair denominator.
+
+**Result.** 99.92%, against the brief's target of at least 99%.
+
+| | Sales |
+|---|---|
+| Matched to a London borough | 1,190,778 |
+| Unmatched: no postcode | 707 |
+| Unmatched: postcode not in the directory | 136 |
+| Unmatched: postcode is outside London | 56 |
+
+The rate is higher than the 99.62% measured on raw data (D01), because most
+sales with a blank postcode were property type "other" and had already been
+excluded in staging.
+
+A further 62 sales are in `core.sales` although their `county` is not Greater
+London: their postcode is in a London borough. They are kept, since the
+postcode is the definition of London (D01).
