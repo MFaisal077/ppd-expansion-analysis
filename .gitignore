@@ -9,3 +9,6 @@ data/raw/*
 
 __pycache__/
 *.pyc
+
+# Power BI files embed a copy of the imported data
+*.pbix

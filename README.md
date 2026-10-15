@@ -131,7 +131,7 @@ psql -U postgres -h localhost -d ppd_expansion -f sql/02_stg_ppd.sql
 ```
 
 This builds `stg.ppd` (10.6 million sales in scope, with real types) and
-`stg.ppd_dropped` (625,714 excluded sales, each with a reason). Every raw row
+`stg.ppd_dropped` (627,291 excluded sales, each with a reason). Every raw row
 lands in exactly one of the two:
 
 ```sql
@@ -208,7 +208,7 @@ Things already learned about the data:
 
 Every choice that changes a number is recorded in
 [docs/decision.md](docs/decision.md), with the reason and the alternative.
-Still open: the price upper cap (D12).
+No decisions are open at present.
 
 ## Data sources and licences
 

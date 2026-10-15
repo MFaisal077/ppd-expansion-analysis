@@ -19,7 +19,7 @@ Status: **Decided**, **Open** (still to settle) or **Superseded**.
 | D09 | [Earnings: ASHE Table 8.7, residence-based, full-time median](#d09) | stg | Decided | 2026-10-03 |
 | D10 | [Rent source: ONS ad hoc London private rents, Apr 2025 to Mar 2026](#d10) | stg | Decided | 2026-10-03 |
 | D11 | [Rent basis for yield: 2-bed rent against flat price](#d11) | stg, mart | Decided | 2026-10-06 |
-| D12 | [Price upper cap](#d12) | mart | **Open** | |
+| D12 | [Price upper cap: sales of £10 million or more excluded](#d12) | stg | Decided | 2026-10-10 |
 | D13 | [Core holds London sales only, category A and B](#d13) | core | Decided | 2026-10-10 |
 | D14 | [How the postcode match rate is measured](#d14) | core | Decided | 2026-10-10 |
 
@@ -119,15 +119,17 @@ row has exactly one reason.
 | 1 | `record_status_D` | Deleted record | 0 |
 | 2 | `property_type_O` | Property type "other" | 625,410 |
 | 3 | `price_below_10000` | Price under £10,000 | 304 |
-| | **Total excluded** | | **625,714** |
+| 4 | `price_10m_or_more` | Price of £10,000,000 or more (D12) | 1,577 |
+| | **Total excluded** | | **627,291** |
 
-Reconciliation: 11,200,195 raw = 10,574,481 kept + 625,714 excluded.
+Reconciliation: 11,200,195 raw = 10,572,904 kept + 627,291 excluded.
 
 **Why.** These are the brief's scope rules. Excluded rows keep their raw values
 so they can be inspected.
 
-**Note.** The £10,000 floor keeps a sale of exactly £10,000 (`>= 10000`).
-Counts are for England and Wales; London counts follow from the core join.
+**Note.** The £10,000 floor keeps a sale of exactly £10,000 (`>= 10000`); the
+cap excludes a sale of exactly £10,000,000 (`< 10000000`). Counts are for
+England and Wales; London counts follow from the core join.
 
 ---
 
@@ -255,12 +257,19 @@ memo says so.
 ---
 
 <a id="d12"></a>
-## D12. Price upper cap (Open)
+## D12. Price upper cap: sales of £10 million or more excluded
 
-**Question.** The brief sets a £10,000 floor and an upper cap "after inspecting
-the distribution".
+**Decision.** Sales of £10,000,000 or more are excluded in staging, as drop
+reason `price_10m_or_more` (D05). The rule applies to category A and B alike.
 
-**Evidence (London sales in `core.sales`, 2015 to 2025).**
+**Why.**
+- The brief asks for an upper cap set after inspecting the distribution.
+- £10 million is the 99.9th percentile of London category A sales: about 1
+  sale in 1,000 is at or above it.
+- At that level a "sale" can be a block or portfolio recorded as one
+  transfer, not one home.
+
+**Evidence (London sales, 2015 to 2025, before the cap).**
 
 | | Category A | Category B |
 |---|---|---|
@@ -272,17 +281,34 @@ the distribution".
 | Sales of £10 million or more | 1,036 (0.1%) | 425 (0.3%) |
 
 The most extreme raw prices (up to £900 million) were property type "other"
-and were already excluded in staging (D05).
+and were already excluded by that rule.
 
-**Recommendation, not yet decided.** Exclude category A sales of £10 million
-or more from the metrics: about 1 sale in 1,000. Every metric is built on
-medians, which a few extreme values barely move, so the cap is a safeguard
-rather than a correction. Excluded sales would be counted and logged.
+**Effect.** 1,577 sales excluded across England and Wales, 1,461 of them in
+London (1,036 category A, 425 category B).
 
-**Alternative.** No cap, relying on medians; or a percentile trim per borough
-and year.
+The effect is concentrated in two boroughs. Of the 1,036 category A sales
+excluded in London, 446 are in Kensington and Chelsea and 428 in Westminster;
+no other borough has more than 82.
 
-**To decide before** building the marts.
+| Borough-year medians, category A, ranked boroughs | |
+|---|---|
+| Borough-years (32 boroughs × 11 years) | 352 |
+| Median unchanged by the cap | 308 |
+| Median changed | 44 |
+| Largest change | £50,000, or 3.8% (Kensington and Chelsea, 2023: £1,300,000 to £1,250,000) |
+
+In Kensington and Chelsea the cap removes 2% to 4% of sales each year and
+lowers the median by up to 3.8%. Growth rates move much less, because both
+ends of the period shift together: its 2020 to 2025 change is -6.8% with the
+cap and -7.0% without.
+
+**Limit to state in the memo.** Median prices for Kensington and Chelsea and
+Westminster are slightly understated by the cap. In those two boroughs, homes
+above £10 million are a real part of the market, not only portfolio transfers.
+
+**Alternatives considered.** No cap, relying on medians; or a percentile trim
+per borough and year, which is harder to explain and would cut different
+price levels in different boroughs.
 
 ---
 
@@ -297,7 +323,7 @@ the flag. Uniqueness of `transaction_id` is enforced with a primary key.
 once. Category B stays available for the sensitivity analysis (D03); headline
 metrics filter to category A in the marts.
 
-**Result.** 1,190,840 London sales, of which 1,020,942 are category A. Every
+**Result.** 1,189,379 London sales, of which 1,019,906 are category A. Every
 borough has at least 136 category A sales in every year, so no borough-year
 falls below the brief's minimum of 30.
 
@@ -325,8 +351,8 @@ answer to "is this sale in London?", which makes it a fair denominator.
 
 | | Sales |
 |---|---|
-| Matched to a London borough | 1,190,778 |
-| Unmatched: no postcode | 707 |
+| Matched to a London borough | 1,189,317 |
+| Unmatched: no postcode | 705 |
 | Unmatched: postcode not in the directory | 136 |
 | Unmatched: postcode is outside London | 56 |
 
